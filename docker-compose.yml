@@ -3,15 +3,17 @@ version: "3.8"
 services:
   web:
     build: .
-    container_name: hydrologics_django
+    container_name: hydroponics_django
     ports:
       - "8000:8000"
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/:/app
+    env_file:
+      - ./.env
   db:
     image: postgres:14
-    container_name: hydrologics_postgres
+    container_name: hydroponics_postgres
     volumes:
       - ./postgres_data:/var/lib/postgresql/data/
     environment:
