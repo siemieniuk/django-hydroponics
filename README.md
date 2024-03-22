@@ -17,7 +17,11 @@ Generated documentation (OpenAPI 3 format) can be found in `docs`.
 Swagger documentation works on http://localhost:8000/doc/swagger/
 
 ## How To Run
-1. Create your own `.env` file based on `.sample.env`
-1. In the root of the project, type `docker-compose build`
-1. Type `docker-compose up`
-1. API should now run on 8000 port.
+1. Create your own `.env` file based on `.sample.env`.
+1. In the root of the project, type `docker-compose build`.
+1. Type `docker-compose up`. After that, API should run on 8000 port.
+1. Type `docker exec -it hydroponics_django bash` to open a container's
+command line.
+1. Apply migrations by `python manage.py makemigrations` followed by
+`python manage.py migrate`.
+1. After that, everything should work.
