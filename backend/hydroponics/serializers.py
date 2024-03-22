@@ -36,6 +36,14 @@ class MeasurementCreateSerializer(serializers.ModelSerializer):
             "when_measured",
         )
 
+    def validate(self, attrs):
+        if not attrs:
+            raise serializers.ValidationError(
+                "At least one argument should be provided"
+            )
+
+        return super().validate(attrs)
+
 
 class MeasurementDetailSerializer(serializers.ModelSerializer):
     class Meta:
