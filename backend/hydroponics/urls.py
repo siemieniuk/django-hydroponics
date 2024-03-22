@@ -10,7 +10,7 @@ urlpatterns = [
     path(
         "<int:hydroponics_id>/measurements",
         MeasurementView.as_view(),
-        name="last_measurements",
+        name="measurements",
     ),
     path("", include(router.urls)),
 ]
