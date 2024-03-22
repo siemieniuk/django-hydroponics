@@ -1,0 +1,507 @@
+openapi: 3.0.3
+info:
+  title: Hydroponics Management System
+  version: 1.0.0
+  description: "This is the implementation of a simple hydroponics \n    management\
+    \ system with CRUD operations on system, JWT Authentication\n    and an ability\
+    \ to add water measurements to any user's system."
+paths:
+  /api/v1/hydroponics/:
+    get:
+      operationId: api_v1_hydroponics_list
+      tags:
+      - hydroponics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HydroponicSystem'
+          description: ''
+    post:
+      operationId: api_v1_hydroponics_create
+      tags:
+      - hydroponics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HydroponicSystem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HydroponicSystem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HydroponicSystem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HydroponicSystem'
+          description: ''
+  /api/v1/hydroponics/{hydroponics_id}/measurements:
+    get:
+      operationId: api_v1_hydroponics_measurements_list
+      description: |-
+        Given provided user (based on JWT token) has rights to
+                a system with provided hydroponics_id, returns a <strong>list</strong>
+                of at most 10 last measurements.
+      parameters:
+      - in: path
+        name: hydroponics_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - measurement
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MeasurementDetail'
+          description: ''
+        '403':
+          description: No response body
+        '404':
+          description: No response body
+    post:
+      operationId: api_v1_hydroponics_measurements_create
+      description: |-
+        Uploads new measurements to a specified hydroponic
+                system provided a user is authenticated by JWT token.<br><br>
+                At least one field must be specified.
+      parameters:
+      - in: path
+        name: hydroponics_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - measurement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeasurementInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MeasurementInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MeasurementInput'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeasurementCreate'
+          description: ''
+  /api/v1/hydroponics/{id}/:
+    get:
+      operationId: api_v1_hydroponics_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hydroponic system.
+        required: true
+      tags:
+      - hydroponics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HydroponicSystem'
+          description: ''
+    put:
+      operationId: api_v1_hydroponics_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hydroponic system.
+        required: true
+      tags:
+      - hydroponics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HydroponicSystem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HydroponicSystem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HydroponicSystem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HydroponicSystem'
+          description: ''
+    patch:
+      operationId: api_v1_hydroponics_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hydroponic system.
+        required: true
+      tags:
+      - hydroponics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHydroponicSystem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHydroponicSystem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHydroponicSystem'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HydroponicSystem'
+          description: ''
+    delete:
+      operationId: api_v1_hydroponics_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hydroponic system.
+        required: true
+      tags:
+      - hydroponics
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/token/obtain:
+    post:
+      operationId: api_v1_token_obtain_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/v1/token/refresh:
+    post:
+      operationId: api_v1_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/token/register:
+    post:
+      operationId: api_v1_token_register_create
+      description: Allows to register a new user.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterSuccessful'
+          description: ''
+components:
+  schemas:
+    HydroponicSystem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        updated:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created
+      - description
+      - id
+      - name
+      - updated
+    MeasurementCreate:
+      type: object
+      properties:
+        hydroponic_system:
+          type: integer
+          writeOnly: true
+        water_ph:
+          type: number
+          format: double
+          nullable: true
+        water_tds:
+          type: number
+          format: double
+          nullable: true
+        water_temp:
+          type: number
+          format: double
+          nullable: true
+        when_measured:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - when_measured
+    MeasurementDetail:
+      type: object
+      properties:
+        when_measured:
+          type: string
+          format: date-time
+          readOnly: true
+        water_ph:
+          type: number
+          format: double
+          nullable: true
+        water_tds:
+          type: number
+          format: double
+          nullable: true
+        water_temp:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - when_measured
+    MeasurementInput:
+      type: object
+      properties:
+        water_ph:
+          type: number
+          format: double
+        water_tds:
+          type: number
+          format: double
+        water_temp:
+          type: number
+          format: double
+    PairToken:
+      type: object
+      properties:
+        refresh:
+          type: string
+        access:
+          type: string
+      required:
+      - access
+      - refresh
+    PatchedHydroponicSystem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        updated:
+          type: string
+          format: date-time
+          readOnly: true
+    RegisterSuccessful:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        token:
+          $ref: '#/components/schemas/PairToken'
+      required:
+      - email
+      - token
+      - username
+    Token:
+      type: object
+      properties:
+        refresh:
+          type: string
+          readOnly: true
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    UserRegister:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        password2:
+          type: string
+          writeOnly: true
+        token:
+          allOf:
+          - $ref: '#/components/schemas/Token'
+          readOnly: true
+        response:
+          type: string
+          readOnly: true
+      required:
+      - password
+      - password2
+      - response
+      - token
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

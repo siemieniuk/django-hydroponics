@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -16,6 +17,7 @@ from hydroponics.serializers import (
 )
 
 
+@extend_schema(tags=["hydroponics"])
 class HydroponicSystemView(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = HydroponicSystemSerializer
@@ -63,6 +65,18 @@ class HydroponicSystemView(ModelViewSet):
 class MeasurementView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=["measurement"],
+        description="""Given provided user (based on JWT token) has rights to
+        a system with provided hydroponics_id, returns a <strong>list</strong>
+        of at most 10 last measurements.""",
+        request=None,
+        responses={
+            "200": MeasurementDetailSerializer(many=True),
+            "403": None,
+            "404": None,
+        },
+    )
     def get(self, request: Request, hydroponics_id: int, format=None):
         if not is_owner_of_system(request, hydroponics_id):
             raise PermissionDenied(
@@ -80,6 +94,21 @@ class MeasurementView(APIView):
         serializer = MeasurementDetailSerializer(measurements, many=True)
         return JsonResponse({"measurements": serializer.data})
 
+    @extend_schema(
+        tags=["measurement"],
+        description="""Uploads new measurements to a specified hydroponic
+        system provided a user is authenticated by JWT token.<br><br>
+        At least one field must be specified.""",
+        request=inline_serializer(
+            "MeasurementInputSerializer",
+            {
+                "water_ph": serializers.FloatField(required=False),
+                "water_tds": serializers.FloatField(required=False),
+                "water_temp": serializers.FloatField(required=False),
+            },
+        ),
+        responses=MeasurementCreateSerializer,
+    )
     def post(self, request: Request, hydroponics_id: int, format=None):
         if not is_owner_of_system(request, hydroponics_id):
             raise PermissionDenied(

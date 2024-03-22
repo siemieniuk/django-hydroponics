@@ -40,6 +40,7 @@ APPEND_SLASH = False
 INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_spectacular",
     "hydroponics",
     "tokens",
     "django.contrib.admin",
@@ -54,11 +55,21 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Hydroponics Management System",
+    "DESCRIPTION": """This is the implementation of a simple hydroponics 
+    management system with CRUD operations on system, JWT Authentication
+    and an ability to add water measurements to any user's system.""",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 MIDDLEWARE = [

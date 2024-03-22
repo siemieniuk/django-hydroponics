@@ -1,5 +1,11 @@
-from django.shortcuts import render
-from rest_framework import status
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_field,
+    extend_schema_serializer,
+    extend_schema_view,
+    inline_serializer,
+)
+from rest_framework import serializers, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -7,6 +13,27 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from tokens.serializers import UserRegisterSerializer
 
 
+@extend_schema(
+    request=UserRegisterSerializer,
+    responses={
+        "201": inline_serializer(
+            "RegisterSuccessful",
+            {
+                "username": serializers.CharField(),
+                "email": serializers.EmailField(),
+                "token": inline_serializer(
+                    "PairToken",
+                    {
+                        "refresh": serializers.CharField(),
+                        "access": serializers.CharField(),
+                    },
+                ),
+                "response": "string",
+            },
+        )
+    },
+    description="Allows to register a new user.",
+)
 @api_view(["POST"])
 def user_registration_view(request):
     serializer = UserRegisterSerializer(data=request.data)
