@@ -44,6 +44,19 @@ class HydroponicSystemView(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    @extend_schema(
+        description="""Retrieves a specific system with 10 last measurements
+        for the owner of the system.""",
+        responses={
+            "200": inline_serializer(
+                "RetrieveHSSerializer",
+                {
+                    "details": MeasurementDetailSerializer(),
+                    "measurements": MeasurementDetailSerializer(many=True),
+                },
+            )
+        },
+    )
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
 

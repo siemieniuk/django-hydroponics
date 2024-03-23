@@ -114,6 +114,9 @@ paths:
   /api/v1/hydroponics/{id}/:
     get:
       operationId: api_v1_hydroponics_retrieve
+      description: |-
+        Retrieves a specific system with 10 last measurements
+                for the owner of the system.
       parameters:
       - in: path
         name: id
@@ -130,7 +133,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HydroponicSystem'
+                $ref: '#/components/schemas/RetrieveHS'
           description: ''
     put:
       operationId: api_v1_hydroponics_update
@@ -422,6 +425,18 @@ components:
       - email
       - token
       - username
+    RetrieveHS:
+      type: object
+      properties:
+        details:
+          $ref: '#/components/schemas/MeasurementDetail'
+        measurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeasurementDetail'
+      required:
+      - details
+      - measurements
     Token:
       type: object
       properties:
